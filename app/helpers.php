@@ -1,6 +1,7 @@
 <?php
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 function dd(...$args)
 {
@@ -26,4 +27,16 @@ function generateJwt(string $subject): string
     $jwt = JWT::encode($payload, $secretKey, 'HS256');
 
     return $jwt;
+}
+
+function validateJwt(string $jwt): bool
+{
+    try {
+        // check signature
+        JWT::decode($jwt, new Key($_ENV['JWT_SECRET_KEY'], 'HS256'));
+        return true;
+    } catch (\Exception $e) {
+        // Token invalid or expired
+        return false;
+    }
 }
