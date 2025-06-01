@@ -1,20 +1,17 @@
 <?php
 
-require_once __DIR__ . '/../bootstrap.php';
-
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use Slim\Psr7\Factory\StreamFactory;
 
+require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../bootstrap.php';
 
 $app = AppFactory::create();
 
+// loading all routes
+(require __DIR__ . '/../app/Routes/all.php')($app);
 
-$app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write(implode(', ', $_ENV));
-    return $response;
-});
+
+$app->run();
 
 
 // url to refresh memory
@@ -49,4 +46,3 @@ $app->get('/json', function (Request $request, Response $response, $args) {
     return $response;
 });
 
-$app->run();

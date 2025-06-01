@@ -1,0 +1,10 @@
+<?php
+
+// no need to import these controllers because all folder/files will be handled by composer because we added autoload for App\
+use App\Controllers\HomeController;
+use Slim\App;
+
+// returning closure
+return function (App $app) {
+    $app->get('/', [HomeController::class, 'index']);  // creates callable for index on HomeController
+};
