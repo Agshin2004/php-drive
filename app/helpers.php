@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -39,4 +40,21 @@ function validateJwt(string $jwt): bool
         // Token invalid or expired
         return false;
     }
+}
+
+function getUserFromJwt(string $jwt)
+{
+    try {
+        $payload = JWT::decode($jwt, new Key($_ENV['JWT_SECRET_KEY'], 'HS256'));
+        $userId = $payload->sub;  // getting user's id rfom payloads subject
+
+        return User::find($userId);
+    } catch (\Exception $e) {
+        throw $e;
+    }
+}
+
+function base_path(string $dir = '')
+{
+    return dirname(__DIR__) . "/$dir";
 }

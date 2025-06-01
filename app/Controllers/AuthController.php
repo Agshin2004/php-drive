@@ -32,6 +32,10 @@ class AuthController
                 'password' => password_hash($password, PASSWORD_DEFAULT),
             ]);
 
+            // create folder for user in user_space
+            $username = explode('@', $email)[0];
+
+            
             // create jwt for user
             $jwt = generateJwt($user->id);
 
