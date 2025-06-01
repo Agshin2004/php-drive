@@ -7,6 +7,9 @@ require __DIR__ . '/../bootstrap.php';
 
 $app = AppFactory::create();
 
+// registering body parser middleware
+$app->addBodyParsingMiddleware();
+
 // loading all routes
 (require __DIR__ . '/../app/Routes/all.php')($app);
 

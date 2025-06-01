@@ -1,15 +1,18 @@
 <?php
 
-$basePath = dirname(__DIR__, 2);
-require "$basePath/bootstrap.php";
+namespace App\Models;
 
-use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Eloquent\Model;
 
-Capsule::schema()->create('users', function ($table) {
-    $table->increments('id');
-    $table->string('email')->unique();
-    $table->string('password');
-    $table->timestamps();
-});
+class User extends Model
+{
+    protected $fillable = [
+        'email',
+        'password'
+    ];
 
-echo 'Migration completed';
+    protected $hidden = [
+        'id',
+        'password'
+    ];
+}

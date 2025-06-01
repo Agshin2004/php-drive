@@ -1,13 +1,17 @@
 {
-    "require": {
-        "slim/slim": "4.*",
-        "slim/psr7": "^1.7",
-        "illuminate/database": "^12.16",
-        "symfony/dotenv": "^7.3"
+  "require": {
+    "slim/slim": "4.*",
+    "slim/psr7": "^1.7",
+    "illuminate/database": "^12.16",
+    "symfony/dotenv": "^7.3",
+    "firebase/php-jwt": "^6.11"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
     },
-    "autoload": {
-        "psr-4": {
-            "App\\": "app/"
-        }
-    }
+    "files": [
+      "app/helpers.php"
+    ]
+  }
 }

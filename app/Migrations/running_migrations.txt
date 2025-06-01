@@ -1,0 +1,2 @@
+php <migration_file>.php
+if migration was successful Migration Completed will be printed out
