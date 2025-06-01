@@ -75,4 +75,14 @@ class AuthController
             ]);
         }
     }
+
+    public function refresh()
+    {
+        throw new \Exception('NOT IMPLEMENTED', 500);
+    }
+
+    public function logout()
+    {
+        throw new \Exception('NOT IMPLEMENTED', 500);
+    }
 }

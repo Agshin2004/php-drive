@@ -10,4 +10,6 @@ return function (App $app) {
     $app->get('/', [HomeController::class, 'index']);  // creates callable for index on HomeController
     $app->post('/register', [AuthController::class, 'register']);
     $app->post('/login', [AuthController::class, 'login']);
+    $app->post('/refresh', [AuthController::class, 'refresh']);
+    $app->post('/logout', [AuthController::class, 'logout']);
 };
