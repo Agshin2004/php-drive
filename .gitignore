@@ -48,17 +48,12 @@ public_html/hot
 
 storage/*.key
 .env
-<<<<<<< HEAD
-=======
+user_store
 /.env
->>>>>>> restore-work
 Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
-<<<<<<< HEAD
-=======
 *.sqlite
->>>>>>> restore-work
 
 # End of https://www.toptal.com/developers/gitignore/api/cakephp,laravel
