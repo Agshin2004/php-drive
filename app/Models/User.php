@@ -8,6 +8,9 @@ class User extends Model
 {
     protected $fillable = [
         'email',
+        'username',
+        'user_folder_name',
+        'user_folder_path',
         'password'
     ];
 
