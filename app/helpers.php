@@ -12,6 +12,11 @@ function dd(...$args)
     die();
 }
 
+function base_path(string $dir = '')
+{
+    return dirname(__DIR__) . "/$dir";
+}
+
 function generateJwt(string $subject): string
 {
     // subject = user's id
@@ -52,9 +57,4 @@ function getUserFromJwt(string $jwt)
     } catch (\Exception $e) {
         throw $e;
     }
-}
-
-function base_path(string $dir = '')
-{
-    return dirname(__DIR__) . "/$dir";
 }

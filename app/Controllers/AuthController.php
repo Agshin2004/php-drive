@@ -34,7 +34,7 @@ class AuthController
 
             // create folder for user in user_space
             $username = explode('@', $email)[0];
-
+            dd($username);
             
             // create jwt for user
             $jwt = generateJwt($user->id);
