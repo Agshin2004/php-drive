@@ -58,3 +58,22 @@ function getUserFromJwt(string $jwt)
         throw $e;
     }
 }
+
+function createUserFolder(string $username)
+{
+    $userStorePath = base_path('user_store');
+    $fullPath = "{$userStorePath}/{$username}";
+
+    if (!is_dir($userStorePath)) {
+        throw new \Exception('user_store folder does not exist');
+    }
+
+    if (is_dir($fullPath)) {
+        throw new \RuntimeException('Folder already exists');
+    }
+
+    if (!mkdir($fullPath)) {
+        throw new \RuntimeException('Failed to create user folder');
+    }
+    return $fullPath;
+}

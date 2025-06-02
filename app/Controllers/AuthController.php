@@ -15,10 +15,11 @@ class AuthController
             $data = $request->getParsedBody();
 
             $email = $data['email'];
+            $username = $data['username'];
             $password = $data['password'];
 
-            if (!$email || !$password) {
-                return ResponseFactory::json(['error' => 'email and password are required'], 400);
+            if (!$email || !$password || !$username) {
+                return ResponseFactory::json(['error' => 'email, username, password are required'], 400);
             }
 
             // check if email is valid
@@ -26,16 +27,18 @@ class AuthController
                 return ResponseFactory::json(['error' => 'invalid email'], 400);
             }
 
+            // create folder for user in user_space
+            $userFolderPath = createUserFolder($username);
+
             // add user to db
             $user = User::create([
                 'email' => $email,
+                'username' => $username,
+                'user_folder_name' => $username,
+                'user_folder_path' => $userFolderPath,
                 'password' => password_hash($password, PASSWORD_DEFAULT),
             ]);
 
-            // create folder for user in user_space
-            $username = explode('@', $email)[0];
-            dd($username);
-            
             // create jwt for user
             $jwt = generateJwt($user->id);
 
