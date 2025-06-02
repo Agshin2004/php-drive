@@ -1,6 +1,9 @@
 <?php
 
+use App\Services\ResponseFactory;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Factory\AppFactory;
+use Slim\Psr7\Response;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../bootstrap.php';
@@ -13,16 +16,25 @@ $app->addBodyParsingMiddleware();
 // loading all routes
 (require __DIR__ . '/../app/Routes/all.php')($app);
 
+$app->addRoutingMiddleware();
+
+// global error handler
+$customErrorHandler = function (
+    ServerRequestInterface $request,
+    Throwable $exception,
+): Response {
+    return ResponseFactory::json([
+        'error' => $exception->getMessage()
+    ], $exception->getCode() ?: 500);
+};
+
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
 $app->run();
 
-
-
-
-
-
 // url to refresh memory
-$app->get('/json', function (Request $request, Response $response, $args) {
+$app->get('/json', function (Request $request, Response $response, $args): Response {
     $data = ['name' => 'agshin', 'surname' => 'nadirov'];
     $payload = json_encode($data);
 
@@ -52,4 +64,3 @@ $app->get('/json', function (Request $request, Response $response, $args) {
 
     return $response;
 });
-
