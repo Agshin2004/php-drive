@@ -12,9 +12,7 @@ class DirController
     public function getUserDirs(Request $request, Response $response)
     {
         $user = $request->getAttribute('user');
-        $folderNames = array_map(function ($folder) {
-            return $folder['folder_name'];
-        }, $user->folders->toArray());
+        $folderNames = array_map(fn($folder) => $folder['folder_name'], $user->folders->toArray());
 
         return ResponseFactory::json([
             $folderNames
@@ -45,5 +43,10 @@ class DirController
         ]);
 
         return ResponseFactory::json(['message' => "{$dirName} created"], 201);
+    }
+
+    public function createFile(Request $request, Response $response) 
+    {
+        // check file for viruses
     }
 }
