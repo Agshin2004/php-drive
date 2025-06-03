@@ -77,3 +77,13 @@ function createUserFolder(string $username)
     }
     return $fullPath;
 }
+
+function userDirExists(string $username, string $dirName)
+{
+    return is_dir(base_path("user_store/{$username}/{$dirName}"));
+}
+
+function createUserDir(string $username, string $dirName)
+{
+    return mkdir(base_path("user_store/{$username}/{$dirName}")); // since recursive is false only last folder will be created
+}

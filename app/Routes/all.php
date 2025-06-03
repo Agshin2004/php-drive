@@ -13,9 +13,12 @@ return function (App $app) {
         ->get('/', [HomeController::class, 'index'])
         ->add(AuthMiddleware::class);  // creates callable for index on HomeController
     $app
-        ->get('/create-dir', [DirController::class, 'createDir'])
+        ->get('/my-dirs', [DirController::class, 'getUserDirs'])
         ->add(AuthMiddleware::class);
-    
+    $app
+        ->post('/create-dir', [DirController::class, 'createDir'])
+        ->add(AuthMiddleware::class);
+
     // * Auth Related Routes
     $app->post('/register', [AuthController::class, 'register']);
     $app->post('/login', [AuthController::class, 'login']);

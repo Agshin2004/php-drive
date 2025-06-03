@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Folder;
 use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
@@ -18,4 +19,9 @@ class User extends Model
         'id',
         'password'
     ];
+
+    public function folders()
+    {
+        return $this->hasMany(Folder::class);
+    }
 }
