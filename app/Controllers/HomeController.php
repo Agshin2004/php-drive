@@ -9,7 +9,8 @@ class HomeController
 {
     public function index(Request $request, Response $response): Response
     {
-        $response->getBody()->write(implode(', ', $_ENV));
+        // $response->getBody()->write(implode(', ', $_ENV));
+        $response->getBody()->write('Welcome to home page');
         return $response;
     }
 }

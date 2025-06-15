@@ -37,6 +37,10 @@ class AuthController
         // create folder for user in user_space
         $userFolderPath = createUserFolder($username);
 
+        if (!$userFolderPath) {
+            return ResponseFactory::error('Unexpected error occured when creating user folder.');
+        }
+
         // add user to db
         $user = User::create([
             'email' => $email,

@@ -12,7 +12,10 @@ class DirController
     public function getUserDirs(Request $request, Response $response)
     {
         $user = $request->getAttribute('user');
-        $folderNames = array_map(fn($folder) => $folder['folder_name'], $user->folders->toArray());
+        $folderNames = array_map(
+            fn ($folder) => $folder['folder_name'],
+            $user->folders->toArray()
+        );
 
         return ResponseFactory::json([
             $folderNames
@@ -21,8 +24,8 @@ class DirController
 
     public function createDir(Request $request, Response $response)
     {
-        $user = $request->getAttribute('user');
-        $dirName = $request->getParsedBody()['dirName'];
+        $user = $request->getAttribute('user'); // NOTE: User gets attached in AuthMiddleware
+        $dirName = array_get($request->getParsedBody(), 'dirName');
 
         if (!isset($dirName) || !is_string($dirName) || trim($dirName) === '') {
             throw new \Exception('Invalid directory name', 422);  // could use 400 status code but decided to use 422
@@ -43,11 +46,5 @@ class DirController
         ]);
 
         return ResponseFactory::json(['message' => "{$dirName} created"], 201);
-    }
-
-    public function createFile(Request $request, Response $response) 
-    {
-        // check file for viruses!
-        
     }
 }

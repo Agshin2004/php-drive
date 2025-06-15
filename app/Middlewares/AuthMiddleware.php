@@ -17,13 +17,15 @@ class AuthMiddleware implements MiddlewareInterface
     public function process(Request $request, Handler $handler): ResponseInterface
     {
         $authHeader = $request->getHeader('authorization')[0] ?? null;
-        if (!$authHeader)
+        if (!$authHeader) {
             return ResponseFactory::json(['error' => 'No JWT token provided'], 403);
+        }
 
         $jwt = explode(' ', $authHeader)[1];
 
-        if (!validateJwt($jwt))
+        if (!validateJwt($jwt)) {
             return ResponseFactory::json(['error' => 'invalid JWT']);
+        }
 
         $user = getUserFromJwt($jwt);
         // NOTE: withAttribute does not change $request it returns new $request with that attribute attached to it

@@ -13,5 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface as Handler;
  */
 class JsonMiddleware implements MiddlewareInterface
 {
-    public function process(Request $request, Handler $handler): ResponseInterface {}
+    public function process(Request $request, Handler $handler): ResponseInterface
+    {
+    }
 }

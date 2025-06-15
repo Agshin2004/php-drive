@@ -17,6 +17,11 @@ function base_path(string $dir = '')
     return dirname(__DIR__) . "/$dir";
 }
 
+function array_get(array $arr, string $key, mixed $default = null): mixed
+{
+    return $arr[$key] ?? $default;
+}
+
 function generateJwt(string $subject): string
 {
     // subject = user's id
@@ -28,8 +33,9 @@ function generateJwt(string $subject): string
     ];
 
     $secretKey = $_ENV['JWT_SECRET_KEY'] ?? null;
-    if (!isset($secretKey))
+    if (!isset($secretKey)) {
         throw new \Exception('JWT secret key is not set', 500);
+    }
     $jwt = JWT::encode($payload, $secretKey, 'HS256');
 
     return $jwt;
@@ -59,7 +65,7 @@ function getUserFromJwt(string $jwt)
     }
 }
 
-function createUserFolder(string $username)
+function createUserFolder(string $username): string
 {
     $userStorePath = base_path('user_store');
     $fullPath = "{$userStorePath}/{$username}";
@@ -78,12 +84,36 @@ function createUserFolder(string $username)
     return $fullPath;
 }
 
-function userDirExists(string $username, string $dirName)
+function userDirExists(string $username, string $dirName): bool
 {
     return is_dir(base_path("user_store/{$username}/{$dirName}"));
 }
 
-function createUserDir(string $username, string $dirName)
+function createUserDir(string $username, string $dirName): bool
 {
-    return mkdir(base_path("user_store/{$username}/{$dirName}")); // since recursive is false only last folder will be created
+    return mkdir(base_path("user_store/{$username}/{$dirName}"));  // since recursive is false only last folder will be created
+}
+
+function checkUserFileExists(string $username, string $folderName, string $filename): bool
+{
+    return is_file(base_path("user_store/{$username}/{$folderName}/{$filename}"));
+}
+
+/**
+ * utility function for creating user files
+ * @param string $username
+ * @param string $filename
+ * @param string $folderName folder name IN WHICH file will go
+ * @return integer
+ */
+function createUserFile(string $username, string $filename, string $folderName): int
+{
+    $filePath = base_path("user_store/{$username}/{$folderName}/{$filename}");
+    $file = fopen($filePath, 'w');
+    if (!$file) {
+        return 0;
+    }
+
+    fclose($file);
+    return 1;
 }

@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use Slim\Psr7\Response;  // used slim's implementation of Psr7 because we will need instance of Response
+// used slim's implementation of Psr7 because we will need instance of (CONCRETE) Response
+use Slim\Psr7\Response;  // since we CANNOT instantiate interface (slim passed implementation behind the scenes), we gotta make use of CONCRETE Response
 
 // NOTE: I know I could use laravel's ResponseFactory but decided to write my own
 class ResponseFactory
@@ -18,5 +19,18 @@ class ResponseFactory
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withStatus($status);
+    }
+
+    public static function error(string $message, int $status = 400): Response
+    {
+        $response = new Response();
+        $payload = [
+            'success' => false,
+            'payload' => $message
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
     }
 }
