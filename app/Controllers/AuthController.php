@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Services\DirService;
 use App\Services\ResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -11,11 +12,11 @@ class AuthController
 {
     public function register(Request $request, Response $response)
     {
-        $data = $request->getParsedBody();
+        $parsedBody = $request->getParsedBody();
 
-        $email = $data['email'];
-        $username = $data['username'];
-        $password = $data['password'];
+        $email = $parsedBody['email'];
+        $username = $parsedBody['username'];
+        $password = $parsedBody['password'];
 
         if (!$email || !$password || !$username) {
             return ResponseFactory::json(['error' => 'email, username, password are required'], 400);
@@ -35,10 +36,10 @@ class AuthController
         }
 
         // create folder for user in user_space
-        $userFolderPath = createUserFolder($username);
+        $userFolderPath = DirService::createUserFolder($username);
 
         if (!$userFolderPath) {
-            return ResponseFactory::error('Unexpected error occured when creating user folder.');
+            throw new \Exception('Unexpected error occured when creating user folder.', 500);
         }
 
         // add user to db
@@ -61,9 +62,9 @@ class AuthController
 
     public function login(Request $request, Response $response)
     {
-        $data = $request->getParsedBody();
-        $email = $data['email'];
-        $password = $data['password'];
+        $parsedBody = $request->getParsedBody();
+        $email = $parsedBody['email'];
+        $password = $parsedBody['password'];
 
         if (!$email || !$password) {
             return ResponseFactory::json(['error' => 'email and password are required'], 400);

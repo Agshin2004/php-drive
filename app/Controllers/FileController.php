@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Services\FileService;
 use App\Services\ResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -10,26 +11,37 @@ class FileController
 {
     public function createFile(Request $request, Response $response)
     {
-        $filename = array_get($request->getParsedBody(), key: 'filename');
-        $folderName = array_get($request->getParsedBody(), 'folder_name');
+        $parsed = $request->getParsedBody();
+        $filename = trim(array_get($parsed, 'filename'));
+        $folderName = array_get($parsed, 'folder_name');
         $user = $request->getAttribute('user');
 
-        if (!isset($filename) || !isset($folderName)) {
-            return ResponseFactory::error('filename or folderName is not specified');
+        if (!$filename || !$folderName) {
+            throw new \Exception(
+                !$filename
+                ?
+                'filename not specified or invalid'
+                :
+                'folder_name not specified',
+                400
+            );
         }
 
         $fileExists = checkUserFileExists($user->username, $folderName, $filename);
         $folderExists = userDirExists($user->username, $folderName);
+
         if ($fileExists || !$folderExists) {
-            return ResponseFactory::error(
-                $fileExists ? "File \"{$filename}\" already exists" : "Folder {$folderName} does not exist"
+            throw new \Exception(
+                $fileExists
+                ?
+                "File \"{$filename}\" already exists"
+                :
+                "Folder {$folderName} does not exist or invalid filename",
+                400
             );
         }
 
-        $created = createUserFile($user->username, $filename, $folderName);
-        if (!$created) {
-            return ResponseFactory::error('Something when wrong when creating file', 500);
-        }
+        FileService::createUserFile($user->username, trim($filename), $folderName);
 
         return ResponseFactory::json(
             ['message' => "File {$filename} created."]
