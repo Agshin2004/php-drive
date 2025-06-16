@@ -1,20 +1,39 @@
 <?php
 
+// use App\Container;
+use Slim\Psr7\Response;
+use Slim\Factory\AppFactory;
 use App\Services\ResponseFactory;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Factory\AppFactory;
-use Slim\Psr7\Response;
+use DI\ContainerBuilder;
+
+use function DI\autowire;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../bootstrap.php';
 
+$builder = new ContainerBuilder(); // using builder to customize containerbefore using it
+$builder->addDefinitions([
+    // since PHP-DI container DOES NOT autowire scalars we gotta make use of constructorParameter() method
+    \App\Services\FileService::class => autowire()->constructorParameter('uploadDir', base_path('user_store')),
+]);
+$container = $builder->build();
+
+AppFactory::setContainer($container);
 $app = AppFactory::create();
+
+// $container = $app->getContainer();
+// $container['upload_dir'] = base_path('upload');
+// Container::set($container);  // singleton container for all app
 
 // registering body parser middleware
 $app->addBodyParsingMiddleware();
 
 // loading all routes
 (require __DIR__ . '/../app/Routes/all.php')($app);
+
+// $container = $app->getContainer();
+// (require '../app/container.php')($container);
 
 $app->addRoutingMiddleware();
 

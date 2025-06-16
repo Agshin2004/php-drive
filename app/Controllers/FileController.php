@@ -9,6 +9,13 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class FileController
 {
+    private FileService $fileService;
+
+    public function __construct(FileService $fileService)
+    {
+        $this->fileService = $fileService;
+    }
+
     public function createFile(Request $request, Response $response)
     {
         $parsed = $request->getParsedBody();
@@ -46,5 +53,36 @@ class FileController
         return ResponseFactory::json(
             ['message' => "File {$filename} created."]
         );
+    }
+
+    public function uploadFile(Request $request, Response $response)
+    {
+        $uploadedFiles = $request->getUploadedFiles();
+        $folderName = array_get($request->getParsedBody() ?? [], 'folder_name');
+        $user = $request->getAttribute('user');
+
+        if (!$folderName || count($uploadedFiles) === 0) {
+            throw new \Exception(
+                !$folderName
+                ?
+                'folder_name not specified'
+                :
+                'No files were uploaded',
+                400
+            );
+        }
+        // TODO: Fix
+        if (!userDirExists($user->username, $folderName)) {
+            throw new \Exception("{$folderName} does not exist! Create it first.");
+        }
+
+        foreach ($uploadedFiles as $file) {
+            $filenames[] = $this->fileService->saveUploadedFile($user->username, $folderName, $file);
+        }
+        $filenamesStr = implode(', ', $filenames);
+
+        return ResponseFactory::json([
+            "{$filenamesStr} were successfully uploaded to {$folderName}/{$user->username}"
+        ]);
     }
 }

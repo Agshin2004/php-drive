@@ -22,6 +22,9 @@ return function (App $app) {
     $app
         ->post('/create-file', [FileController::class, 'createFile'])
         ->add(AuthMiddleware::class);
+    $app
+        ->post('/upload-file', [FileController::class, 'uploadFile'])
+        ->add(AuthMiddleware::class);
 
     // * Auth Related Routes
     $app->post('/register', [AuthController::class, 'register']);

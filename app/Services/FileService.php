@@ -2,8 +2,17 @@
 
 namespace App\Services;
 
+use Psr\Http\Message\UploadedFileInterface;
+
 class FileService
 {
+    private string $uploadDir;
+
+    public function __construct(string $uploadDir)
+    {
+        $this->uploadDir = $uploadDir;
+    }
+
     /**
      * utility function for creating user files
      * @param string $username
@@ -20,5 +29,31 @@ class FileService
         }
 
         fclose($file);
+    }
+
+    public function saveUploadedFile(string $username, $folderName, UploadedFileInterface $file)
+    {
+        if (checkUserFileExists($username, $folderName, $file->getClientFilename())) {
+            throw new \Exception("{$file->getClientFilename()} already exists in {$folderName}");
+        }
+
+        $path = implode(DIRECTORY_SEPARATOR, [
+            $this->uploadDir,
+            $username,
+            $folderName,
+            $file->getClientFilename(),
+        ]);
+
+        // * MANUALLY WORKING WITH STREEAM
+        // $inputStream = $file->getStream()->detach(); // getting native php stream to save file aftewards
+        // $outputStream = fopen($path, 'wb');
+        // stream_copy_to_stream($inputStream, $outputStream);
+        // fclose($inputStream);
+        // fclose($outputStream);
+
+        // * USING moveTo() -> simpler
+        $file->moveTo($path);
+
+        return $file->getClientFilename();
     }
 }
