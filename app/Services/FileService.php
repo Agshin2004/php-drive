@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\File;
+use App\Models\Folder;
 use Psr\Http\Message\UploadedFileInterface;
 
 class FileService
@@ -20,13 +22,17 @@ class FileService
      * @param string $folderName folder name IN WHICH file will go
      * @return integer
      */
-    public static function createUserFile(string $username, string $filename, string $folderName): void
+    public function createUserFile(string $username, string $filename, string $folderName): void
     {
-        $filePath = base_path("user_store/{$username}/{$folderName}/{$filename}");
+        $filePath = "{$this->uploadDir}/{$username}/{$folderName}/{$filename}";
         $file = fopen($filePath, 'w');
         if (!$file) {
             throw new \Exception('Something when wrong when creating file', 500);
         }
+        $fileExt = pathinfo($filePath, PATHINFO_EXTENSION);
+
+        // Since first argument always must be passed gotta make it null so it  works
+        $this->saveFileToDB(null, filename: $filename, fileExt: $fileExt, folderName: $folderName);
 
         fclose($file);
     }
@@ -53,7 +59,27 @@ class FileService
 
         // * USING moveTo() -> simpler
         $file->moveTo($path);
+        $this->saveFileToDB($file, folderName: $folderName);
 
         return $file->getClientFilename();
+    }
+
+    private function saveFileToDB(
+        ?UploadedFileInterface $file,
+        ?string $filename,
+        ?string $fileExt,
+        string $folderName
+    ): void {
+        $folder = Folder::where('folder_name', $folderName)->first();
+        if (!$folder) {
+            throw new \Exception("Folder not found: $folderName");
+        }
+
+        File::create([
+            'filename' => $file ? $file->getClientFilename() : $filename,
+            'file_ext' => $file ? $file->getClientMediaType() : $fileExt,
+            'file_size' => $file ? $file->getSize() : 0,
+            'folder_id' => $folder->id
+        ]);
     }
 }

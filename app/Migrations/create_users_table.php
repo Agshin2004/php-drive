@@ -1,5 +1,10 @@
 <?php
 
+// NOTE: This didn't work because migrations are loaded via command line and
+// composer does not autoload helpers.php
+// require base_path('bootstrap/php');
+// require base_path('bootstrap/php');
+
 $basePath = dirname(__DIR__, 2);
 require "$basePath/bootstrap.php";
 

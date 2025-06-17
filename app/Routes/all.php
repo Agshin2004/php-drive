@@ -17,6 +17,9 @@ return function (App $app) {
         ->get('/my-dirs', [DirController::class, 'getUserDirs'])
         ->add(AuthMiddleware::class);
     $app
+        ->get('/my-files', [FileController::class, 'getUserFiles'])
+        ->add(AuthMiddleware::class);
+    $app
         ->post('/create-dir', [DirController::class, 'createDir'])
         ->add(AuthMiddleware::class);
     $app

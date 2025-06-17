@@ -21,6 +21,7 @@
     "phpstan/phpstan": "^2.1"
   },
   "scripts": {
+    "run:dev": "cd public && php -S localhost:8000",
     "cs": "vendor/bin/php-cs-fixer check",
     "cs:fix": "vendor/bin/php-cs-fixer fix",
     "stan": "vendor/bin/phpstan analyse"

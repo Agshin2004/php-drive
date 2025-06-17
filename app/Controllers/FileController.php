@@ -16,6 +16,11 @@ class FileController
         $this->fileService = $fileService;
     }
 
+    // public function getUserFiles(Request $request, Response $response)
+    // {
+        
+    // }
+
     public function createFile(Request $request, Response $response)
     {
         $parsed = $request->getParsedBody();
@@ -48,7 +53,7 @@ class FileController
             );
         }
 
-        FileService::createUserFile($user->username, trim($filename), $folderName);
+        $this->fileService->createUserFile($user->username, trim($filename), $folderName);
 
         return ResponseFactory::json(
             ['message' => "File {$filename} created."]

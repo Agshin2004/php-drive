@@ -13,6 +13,7 @@ class DirService
     public static function createDir(string $username, string $dirName): void
     {
         $created = mkdir(base_path("user_store/{$username}/{$dirName}"));  // since recursive is false only last folder will be created
+        
         if (!$created) {
             throw new \Exception('Something went wrong when creating file. Try again');
         }
@@ -34,6 +35,7 @@ class DirService
         if (!mkdir($fullPath)) {
             throw new \RuntimeException('Failed to create user folder');
         }
+
         return $fullPath;
     }
 }
