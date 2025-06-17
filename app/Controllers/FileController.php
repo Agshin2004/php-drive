@@ -71,16 +71,17 @@ class FileController
                 400
             );
         }
-        // TODO: Fix
+
         if (!userDirExists($user->username, $folderName)) {
             throw new \Exception("{$folderName} does not exist! Create it first.");
         }
 
+        // uploading each file from request and saving its name returned from fileService::saveUploadFile to filenames arr
         foreach ($uploadedFiles as $file) {
             $filenames[] = $this->fileService->saveUploadedFile($user->username, $folderName, $file);
         }
-        $filenamesStr = implode(', ', $filenames);
 
+        $filenamesStr = implode(', ', $filenames);
         return ResponseFactory::json([
             "{$filenamesStr} were successfully uploaded to {$folderName}/{$user->username}"
         ]);
