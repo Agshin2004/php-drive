@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\User;
 use App\Services\FileService;
 use App\Services\ResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -18,7 +19,8 @@ class FileController
 
     // public function getUserFiles(Request $request, Response $response)
     // {
-        
+    // $user = $request->getAttribute('user');
+    // File::where('')
     // }
 
     public function createFile(Request $request, Response $response)
@@ -41,8 +43,10 @@ class FileController
 
         $fileExists = checkUserFileExists($user->username, $folderName, $filename);
         $folderExists = userDirExists($user->username, $folderName);
+        // got folder as folders() (relationship method returns query builder not as relationship property which returns collection)
+        $isUserFolder = $user->folders()->where('folder_name', $folderName)->exists();
 
-        if ($fileExists || !$folderExists) {
+        if ($fileExists || !$folderExists || !$isUserFolder) {
             throw new \Exception(
                 $fileExists
                 ?
@@ -77,8 +81,11 @@ class FileController
             );
         }
 
-        if (!userDirExists($user->username, $folderName)) {
-            throw new \Exception("{$folderName} does not exist! Create it first.");
+        // got folder as folders() (relationship method returns query builder not as relationship property which returns collection)
+        $isUserFolder = $user->folders()->where('folder_name', $folderName)->exists();
+
+        if (!userDirExists($user->username, $folderName) || !$isUserFolder) {
+            throw new \Exception("{$folderName} folder does not exist! Create it first.");
         }
 
         // uploading each file from request and saving its name returned from fileService::saveUploadFile to filenames arr
