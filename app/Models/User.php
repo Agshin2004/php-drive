@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property \Illuminate\Database\Eloquent\Collection $folders
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany folders()
+ */
 class User extends Model
 {
     protected $fillable = [

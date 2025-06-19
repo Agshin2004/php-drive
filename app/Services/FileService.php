@@ -57,7 +57,10 @@ class FileService
         // fclose($inputStream);
         // fclose($outputStream);
 
-        // * USING moveTo() -> simpler
+        // * USING moveTo() -> simpler; moveTo() just relocates temp file saved (apache or nginx) by server
+        // * uploaded file saved to temp file (as temp file) by server and when we moveTo it creates stream
+        // * and just relocates that file
+        // * upload wasn't loaded into memory, it was sent by web browser chunk by chunk and saved to (as) temp file
         $file->moveTo($path);
         $this->saveFileToDB($file, folderName: $folderName);
 

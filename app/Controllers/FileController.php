@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\File;
 use App\Models\User;
 use App\Services\FileService;
 use App\Services\ResponseFactory;
@@ -10,18 +11,30 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class FileController
 {
-    private FileService $fileService;
-
-    public function __construct(FileService $fileService)
+    public function __construct(public FileService $fileService)
     {
-        $this->fileService = $fileService;
     }
 
-    // public function getUserFiles(Request $request, Response $response)
-    // {
-    // $user = $request->getAttribute('user');
-    // File::where('')
-    // }
+    public function getUserFiles(Request $request, Response $response)
+    {
+        $user = $request->getAttribute('user');
+        // Getting user's folders
+        $folderIds = $user->folders()->pluck('id'); // pluck method is on query builder
+        // Getting user's files
+        $files = File::whereIn('folder_id', $folderIds)->get()->toArray();
+
+        return ResponseFactory::json($files);
+    }
+
+    public function getUserFile(Request $request, Response $response, $id)
+    {
+        $file = File::find($id)->toArray();
+        if (!$file) {
+            throw new \Exception('File not found', 400);
+        }
+
+        return ResponseFactory::json($file);
+    }
 
     public function createFile(Request $request, Response $response)
     {
