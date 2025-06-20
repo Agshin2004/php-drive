@@ -1,11 +1,13 @@
 <?php
 
 // use App\Container;
+use Monolog\Logger;
 use Slim\Psr7\Response;
-use Slim\Factory\AppFactory;
-use App\Services\ResponseFactory;
-use Psr\Http\Message\ServerRequestInterface;
 use DI\ContainerBuilder;
+use Psr\Log\LoggerInterface;
+use Slim\Factory\AppFactory;
+use Monolog\Handler\StreamHandler;
+use App\Exceptions\CustomErrorHandler;
 
 use function DI\autowire;
 
@@ -16,6 +18,12 @@ $builder = new ContainerBuilder(); // using builder to customize containerbefore
 $builder->addDefinitions([
     // since PHP-DI container DOES NOT autowire scalars we gotta make use of constructorParameter() method
     \App\Services\FileService::class => autowire()->constructorParameter('uploadDir', base_path('user_store')),
+    LoggerInterface::class => function (): Logger {
+        // whenever logger is request in constructor new instance of logger bwill be create
+        $logger = new Logger('main_app_logger');
+        $logger->pushHandler(new StreamHandler(base_path('log/app.log'), Logger::DEBUG));
+        return $logger;
+    },
 ]);
 $container = $builder->build();
 
@@ -38,17 +46,9 @@ $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 
 // global error handler
-$customErrorHandler = function (
-    ServerRequestInterface $request,
-    Throwable $exception,
-): Response {
-    return ResponseFactory::json([
-        'error' => $exception->getMessage()
-    ], $exception->getCode() ?: 500);
-};
-
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
-$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
+$errorMiddleware->setDefaultErrorHandler($container->get(CustomErrorHandler::class));
+// $errorMiddleware->setDefaultErrorHandler('customErrorHandler'); // passing func as callable string (must be in scope; PHP resolves it to function if signature matches)
 
 $app->run();
 
