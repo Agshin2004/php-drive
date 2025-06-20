@@ -5,6 +5,7 @@ use App\Controllers\AuthController;
 use App\Controllers\DirController;
 use App\Controllers\FileController;
 use App\Controllers\HomeController;
+use App\Controllers\MiscController;
 use App\Middlewares\AuthMiddleware;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
@@ -14,6 +15,9 @@ return function (App $app) {
     $app->group('/api', function (RouteCollectorProxy $group) {
         $group
             ->get('/', [HomeController::class, 'index'])  // creates callable for index on HomeController
+            ->add(AuthMiddleware::class);
+        $group
+            ->get('/search', [MiscController::class, 'search'])
             ->add(AuthMiddleware::class);
         $group
             ->get('/dirs', [DirController::class, 'getUserDirs'])
