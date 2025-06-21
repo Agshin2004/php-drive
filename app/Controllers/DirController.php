@@ -13,9 +13,20 @@ class DirController
     public function getUserDirs(Request $request, Response $response)
     {
         $user = $request->getAttribute('user');
+        $page = array_get($request->getQueryParams(), 'page');
+        $perPage = 4;
+        $offset = ($page - 1) * $perPage;
+
+        $folders = $user
+            ->folders()
+            ->offset($offset)
+            ->limit($perPage)
+            ->get()
+            ->toArray();
+
         $folderNames = array_map(
             fn ($folder) => $folder['folder_name'],
-            $user->folders->toArray()
+            $folders
         );
 
         return ResponseFactory::json([

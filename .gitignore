@@ -55,5 +55,5 @@ Homestead.json
 /.vagrant
 .phpunit.result.cache
 *.sqlite
+log/app.log
 
-# End of https://www.toptal.com/developers/gitignore/api/cakephp,laravel
