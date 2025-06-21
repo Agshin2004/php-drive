@@ -17,9 +17,35 @@ class MiscController
 
     public function search(Request $request, Response $response)
     {
-        $query = array_get($request->getQueryParams(), 'query');
+        $queryParams = $request->getQueryParams();
+        $query = array_get($queryParams, 'query');
+        $extFilter = array_get($queryParams, 'ext', null);
+        $fileSizeFilter = array_get($queryParams, 'size', null);
 
-        // getting cleint's i[
+        $sizeOperator = '>='; // defaulting filter operator to >= of not specified
+        $sizeValue = 0;
+        if ($fileSizeFilter) {
+            $validOperator = collect(FILTER_OPERATORS)->first(fn($operator) => str_starts_with($fileSizeFilter, $operator));
+            if (! $validOperator) {
+                throw new \Exception('Unsupported lookup operator');
+            }
+
+            foreach (FILTER_OPERATORS as $operator) {
+                if (str_starts_with($fileSizeFilter, $operator)) {
+                    $sizeOperator = $operator;
+                    $sizeValue = substr($fileSizeFilter, strlen($operator));
+                    break;
+                }
+            }
+
+            if (!$sizeValue) {
+                $sizeValue = $fileSizeFilter;
+                $sizeOperator = '=';
+            }
+        }
+        // dd($sizeOperator, $sizeValue);
+
+        // getting cleint's ip
         $serverParams = $request->getServerParams();
         $ip = $serverParams['REMOTE_ADDR'] ?? 'unkwown ip';
 
@@ -36,8 +62,15 @@ class MiscController
         ]);
 
         // LIKE: % = any chars, _ = one char ('%abc%' contains, 'abc%' starts with, '%abc' ends with, 'a_c' = 'abc')
-        $files = File::where('filename', 'LIKE', '%' . strtolower($query) . '%')->get()->toArray();
-        $dirs = Folder::where('folder_name', 'LIKE', '%' . strtolower($query) . '%')->get()->toArray();
+        $files = File::where('filename', 'LIKE', '%' . strtolower($query) . '%')
+            ->where('file_ext', 'LIKE', "%{$extFilter}%")
+            ->where('file_size', $sizeOperator, $sizeValue)
+            ->get()
+            ->toArray();
+
+        $dirs = Folder::where('folder_name', 'LIKE', '%' . strtolower($query) . '%')
+            ->get()
+            ->toArray();
 
         $this->loggerService->info('Search completed', [
             'query' => $query,
@@ -46,8 +79,8 @@ class MiscController
         ]);
 
         $jsonArr = [
-            'folder_count' => count($files),
-            'files_count' => count($dirs),
+            'files_count' => count($files),
+            'folder_count' => count($dirs),
         ];
 
         if (!empty($files)) {

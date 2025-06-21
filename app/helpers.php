@@ -4,6 +4,14 @@ use App\Models\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
+const FILTER_OPERATORS = [
+    '<',
+    '>',
+    '<=',
+    '>=',
+    '=',
+];
+
 function dd(...$args)
 {
     echo '<pre>';
